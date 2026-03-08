@@ -22,18 +22,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg libgl1 libglib2.0-0
 
-      - name: Install packages
+      - name: Create venv, install deps, run script
+        shell: bash
         run: |
+          python -m venv .venv
+          source .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
-          pip uninstall -y numpy
-          pip install numpy==1.26.4
           pip install torch==2.0.1 torchvision==0.15.2
+          pip install numpy==1.26.4
           pip install opencv-python pillow
           pip install basicsr==1.4.2 facexlib==0.3.0 realesrgan==0.3.0 gfpgan==1.3.8
-          python -c "import numpy; print(numpy.__version__)"
-
-      - name: Run script
-        run: |
+          python -c "import sys, numpy, torch, torchvision; print(sys.executable); print(numpy.__version__); print(torch.__version__); print(torchvision.__version__)"
           python scripts/restore_faces_batch.py
 
       - name: Upload output
