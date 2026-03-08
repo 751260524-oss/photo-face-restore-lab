@@ -22,7 +22,6 @@ def setup_models():
 
     run(["pip", "install", "-r", "requirements.txt"], cwd=gfpgan)
     run(["pip", "install", "-e", "."], cwd=gfpgan)
-    run(["pip", "install", "realesrgan", "basicsr", "facexlib"])
 
     return gfpgan
 
