@@ -22,17 +22,50 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg libgl1 libglib2.0-0
 
-      - name: Create venv, install deps, run script
+      - name: Create venv and install dependencies
         shell: bash
         run: |
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
+
+          # 先把基础版本钉死
           pip install numpy==1.26.4
           pip install torch==2.0.1 torchvision==0.15.2
-          pip install opencv-python pillow
+
+          # 不要装会强拉 numpy 2.x 的新版 opencv
+          pip install opencv-python-headless==4.8.1.78 pillow==10.4.0
+
+          # GFPGAN 相关依赖
           pip install basicsr==1.4.2 facexlib==0.3.0 realesrgan==0.3.0 gfpgan==1.3.8
-          python -c "import sys, numpy, torch, torchvision; print(sys.executable); print(numpy.__version__); print(torch.__version__); print(torchvision.__version__)"
+
+          # 最后再次强制锁回 numpy 1.x，防止被间接升级
+          pip install --force-reinstall numpy==1.26.4
+
+      - name: Verify environment
+        shell: bash
+        run: |
+          source .venv/bin/activate
+          python - <<'PY'
+          import sys
+          import numpy
+          import torch
+          import torchvision
+          import cv2
+
+          print("Python:", sys.version)
+          print("NumPy:", numpy.__version__)
+          print("Torch:", torch.__version__)
+          print("TorchVision:", torchvision.__version__)
+          print("OpenCV:", cv2.__version__)
+
+          assert numpy.__version__.startswith("1.26."), f"Unexpected NumPy version: {numpy.__version__}"
+          PY
+
+      - name: Run restore script
+        shell: bash
+        run: |
+          source .venv/bin/activate
           python scripts/restore_faces_batch_fixed.py
 
       - name: Upload output
