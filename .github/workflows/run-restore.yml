@@ -19,7 +19,9 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          pip install opencv-python numpy pillow
+          pip install torch==2.1.2 torchvision==0.16.2
+          pip install basicsr facexlib gfpgan realesrgan
+          pip install opencv-python pillow numpy
 
       - name: Run script
         run: |
