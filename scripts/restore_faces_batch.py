@@ -1,4 +1,4 @@
-﻿import os
+﻿import sys
 import subprocess
 from pathlib import Path
 
@@ -16,12 +16,11 @@ def setup_models():
     gfpgan = THIRD / "GFPGAN"
 
     if not gfpgan.exists():
-        run(["git", "clone", "--depth", "1",
-             "https://github.com/TencentARC/GFPGAN.git",
-             str(gfpgan)])
-
-    run(["pip", "install", "-r", "requirements.txt"], cwd=gfpgan)
-    run(["pip", "install", "-e", "."], cwd=gfpgan)
+        run([
+            "git", "clone", "--depth", "1",
+            "https://github.com/TencentARC/GFPGAN.git",
+            str(gfpgan)
+        ])
 
     return gfpgan
 
@@ -30,12 +29,14 @@ def restore(gfpgan):
     OUTPUT.mkdir(exist_ok=True)
 
     for img in INPUT.glob("*"):
-        name = img.stem
-        out = OUTPUT / name
+        if not img.is_file():
+            continue
+
+        out = OUTPUT / img.stem
         out.mkdir(exist_ok=True)
 
         run([
-            "python",
+            sys.executable,
             "inference_gfpgan.py",
             "-i", str(img),
             "-o", str(out),
