@@ -1,0 +1,32 @@
+name: Run Face Restore
+
+on:
+  workflow_dispatch:
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install opencv-python numpy pillow
+
+      - name: Run restore script
+        run: |
+          python scripts/restore_faces_batch.py
+
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: restore-output
+          path: output/
