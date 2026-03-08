@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import subprocess
 from pathlib import Path
 
@@ -9,6 +9,7 @@ THIRD = ROOT / "third_party"
 
 
 def run(cmd, cwd=None):
+    print("[RUN]", " ".join(map(str, cmd)))
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
@@ -25,13 +26,18 @@ def setup_models():
     return gfpgan
 
 
-def restore(gfpgan):
+def restore(gfpgan: Path):
     OUTPUT.mkdir(exist_ok=True)
+    INPUT.mkdir(exist_ok=True)
 
-    for img in INPUT.glob("*"):
-        if not img.is_file():
-            continue
+    exts = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+    images = [p for p in INPUT.iterdir() if p.is_file() and p.suffix.lower() in exts]
 
+    if not images:
+        print(f"[WARN] No images found in: {INPUT}")
+        return
+
+    for img in images:
         out = OUTPUT / img.stem
         out.mkdir(exist_ok=True)
 

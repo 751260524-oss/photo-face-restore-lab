@@ -28,12 +28,12 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
-          pip install torch==2.0.1 torchvision==0.15.2
           pip install numpy==1.26.4
+          pip install torch==2.0.1 torchvision==0.15.2
           pip install opencv-python pillow
           pip install basicsr==1.4.2 facexlib==0.3.0 realesrgan==0.3.0 gfpgan==1.3.8
           python -c "import sys, numpy, torch, torchvision; print(sys.executable); print(numpy.__version__); print(torch.__version__); print(torchvision.__version__)"
-          python scripts/restore_faces_batch.py
+          python scripts/restore_faces_batch_fixed.py
 
       - name: Upload output
         uses: actions/upload-artifact@v4
