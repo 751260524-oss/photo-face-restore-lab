@@ -5,9 +5,8 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
-from typing import Iterable
 
-from PIL import Image, ImageOps, ImageDraw
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 INPUT = ROOT / "input"
@@ -20,8 +19,6 @@ LOGS = OUTPUT / "logs"
 SUPPORTED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 GFPGAN_REPO = "https://github.com/TencentARC/GFPGAN.git"
 GFPGAN_VERSION = "1.4"
-UPSCALE = "2"
-BG_UPSAMPLER = "realesrgan"
 
 
 def log(*parts: object) -> None:
@@ -112,9 +109,9 @@ def restore_one(gfpgan: Path, image_path: Path) -> dict:
         "-v",
         GFPGAN_VERSION,
         "-s",
-        UPSCALE,
+        "4",
         "--bg_upsampler",
-        BG_UPSAMPLER,
+        "realesrgan",
     ]
 
     run(cmd, cwd=gfpgan)
@@ -185,7 +182,7 @@ def main() -> int:
         log(f"Processing {image_path.name}")
         try:
             results.append(restore_one(gfpgan, image_path))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             err_path = LOGS / f"{image_path.stem}.log"
             err_path.write_text(traceback.format_exc(), encoding="utf-8")
             results.append(
